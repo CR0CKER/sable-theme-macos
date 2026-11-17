@@ -176,9 +176,26 @@ These are settled. Change them on purpose, not by accident.
 9. **Header bars are 64px** (`--header-height`), up from 48 and then 56: room headers with a
    description (`.room-title` plus `.room-topic` beside the 36px avatar) looked crammed. The title
    has `line-height: 20px`, the topic `margin-top: 4px; line-height: 1.35`. The room-list header
-   shares the variable, so both headers stay the same height.
+   shares the variable, so both headers stay the same height. In the narrow layout the header also
+   reaches under the title band and pads itself down by `--edge-inset-top`, so its height is
+   `--header-height` plus that inset, as in Sable's own rule (64px alone left its 44px buttons
+   overlapping the band by about 4px; 1.0.2).
 10. **The pinned-messages count** (`.panel-header-button .pin-badge`) sits at the icon's top-right
     corner instead of over the pin glyph: a solid pill with a cut-out ring in the header colour.
+11. **Icons:** 18px (`--mac-icon-size`) in the header bars, sidebar and composer, 16px in menus.
+    Every header bar icon is 18px: Sable draws Members, More options and Back at 24px
+    (`.members-button svg` and so on, `--icon-size-medium`), so the theme sizes
+    `.panel-header-button svg` itself (1.0.1). Menus size only a row's own icon,
+    `.menu-item > svg` as Sable does: a descendant selector also stretched the presence dot's
+    inner svg (a 10px ring) out of its ring, and the account menu's dot is re-centred on the 16px
+    icon column (Sable centres it on 20px). A highlighted menu row turns its text and icons white,
+    but not a presence dot, which keeps its status colour (1.0.1). Check icons with Adwaita for
+    Sable's [`scripts/icon-probe.mjs`](https://github.com/CR0CKER/adwaita-for-sable/blob/main/scripts/icon-probe.mjs),
+    which compares the current screen with stock Sable and works with any theme.
+12. **Made for macOS.** On Linux and Windows the themes only have to stay usable: Sable's own
+    title bar (minimise, maximise, close) stays above the card, the card and headers clear it, and
+    `system-ui` stands in for the Mac fonts (1.0.2). An integrated title bar there (Sable's window
+    buttons restyled as traffic lights) was started and dropped on purpose (2026-11-17).
 
 Other choices: SF Pro at 13px, 28px controls, the open room filled with system blue and white text
 (Slack's active-channel treatment), rounded-square avatars, translucent blurred menus with a blue
@@ -212,5 +229,8 @@ variables.
 - The 16px window corner radius is an assumption.
 - Dialogs other than Settings, the image viewer, the threads and members side panels, the narrow
   (< 48rem) layout, and the composer's expanded mode.
+- 1.0.2's taller narrow-layout header (92px: the 28px band plus 64px) was measured with
+  `data-client-decorations="mac"` set on another system, not seen on a Mac with its traffic
+  lights. The wide layout measured identical before and after.
 
 <sub>[↑ Back to contents](#contents)</sub>
