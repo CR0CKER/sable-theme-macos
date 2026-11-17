@@ -1,7 +1,7 @@
 #!/bin/sh
 # live.sh [shot.png] — rebuild the themes; Sable re-reads file-linked themes
 # every second, so the running app updates by itself. Optionally screenshot.
-# Needs Sable running with the debug port (see CLAUDE.md) for the screenshot.
+# Needs Sable running with the debug port (see docs/development.md) for the screenshot.
 set -eu
 here=$(cd "$(dirname "$0")" && pwd)
 "$here/../build.sh" >/dev/null
