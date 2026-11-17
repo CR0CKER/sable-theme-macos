@@ -1,0 +1,654 @@
+
+/* ==========================================================================
+   macOS for Sable: structure (shared by light and dark).
+   Layout after Slack for Mac: one grey window surface (title band, space
+   rail, room list) with the conversation in an inset, rounded white card.
+   Selectors use Sable's semantic class names only, never svelte-* hashes.
+   ========================================================================== */
+
+/* ---- Type, shape and density ---------------------------------------------- */
+body.sable-remote-theme,
+body.sable-remote-theme .text-scale-scope {
+  /* macOS uses 13pt-on-screen (13px) body text; Sable's text size still scales. */
+  --font-size-x-small: calc(10px * var(--text-scale));
+  --font-size-small: calc(11px * var(--text-scale));
+  --font-size-label: calc(12px * var(--text-scale));
+  --font-size-body: calc(13px * var(--text-scale));
+  --font-size-subheading: calc(13px * var(--text-scale));
+  --font-size-heading: calc(15px * var(--text-scale));
+  --font-size-editor: calc(14px * var(--text-scale));
+}
+body.sable-remote-theme {
+  /* San Francisco. --font-family resolves on <html>, so set both it and its
+     base here (a font chosen in Settings still wins: it is an inline style). */
+  --font-family-base: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", var(--font-family-emoji), sans-serif;
+  --font-family: var(--font-family-base);
+  --font-family-mono-base: ui-monospace, "SF Mono", Menlo, monospace;
+  --font-family-mono: var(--font-family-mono-base);
+  --font-weight-medium: 500;
+  /* macOS radii: 6px controls, 8px rows/fields, 10px cards, 12px sheets. */
+  --radius: 6px;
+  --radius-outer: 10px;
+  --radius-padding: 3px;
+  --radii-300: 5px;
+  --radii-400: 6px;
+  --radii-500: 10px;
+  --control-height-300: 28px;
+  --control-height-small: 28px;
+  /* 64px: room headers stack name + description beside a 36px avatar;
+     48 and 56px felt crammed. The room-list header shares it, so the
+     titles stay aligned. */
+  --header-height: 64px;
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 0;
+  --mac-icon-size: 18px;
+  --mac-band: 28px;             /* the title band, where the traffic lights sit */
+  --mac-gap: 4px;               /* window margin around the content card */
+  /* Concentric corners: the card's radius is the window's (macOS 26 draws
+     a 16pt corner on a window without a toolbar) minus the gap. */
+  --mac-window-radius: 16px;
+  --mac-card-radius: calc(var(--mac-window-radius) - var(--mac-gap));
+  --shadow-e200: var(--mac-menu-shadow);
+  --shadow-e300: var(--mac-menu-shadow);
+  --shadow-float: var(--mac-menu-shadow);
+  --shadow-e400: 0 20px 50px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.12);
+  --shadow-dialog: var(--shadow-e400);
+  --tc-link: var(--mac-accent-text);
+  font-family: var(--font-family);
+  font-size: var(--font-size-body);
+  -webkit-font-smoothing: antialiased;
+}
+body.sable-remote-theme ::selection { background: var(--mac-selection); }
+
+/* ---- Integrated title bar --------------------------------------------------
+   With "custom title bar" on, Sable opens the Mac window with
+   titleBarStyle "hidden": the native traffic lights stay where macOS puts
+   them (centred in a 28px band) and Sable draws a draggable strip under them
+   (:root[data-client-decorations=mac]). That strip becomes a borderless band
+   in the window colour, 28px so the lights sit centred in it, with the window
+   title centred like a native title. Sable's own drag region keeps working. */
+:root[data-client-decorations=mac] body.sable-remote-theme {
+  --titlebar-height: var(--mac-band);
+  --safe-top: calc(var(--safe-area-inset-top, 0px) + var(--titlebar-height));
+}
+:root[data-client-decorations=mac] body.sable-remote-theme .titlebar {
+  background: var(--mac-window-bg);
+  border-bottom: 0;
+  box-shadow: none;
+}
+:root[data-client-decorations=mac] body.sable-remote-theme .titlebar .drag {
+  /* Same inset on both sides so the title is centred on the window. */
+  padding-inline: var(--mac-traffic-lights, 5.5rem);
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mac-dim-fg);
+}
+/* No window title: the room header names what's on screen, as in Slack. */
+:root[data-client-decorations=mac] body.sable-remote-theme .titlebar .title { visibility: hidden; }
+/* Wide layout, as in Slack: no band at all. The traffic lights float over
+   the top of the space rail (padded down to clear them), the room list
+   header and the content card run up to the window's top edge, and the
+   header bars and rail top move the window. */
+@media (width >= 48rem) {
+  :root[data-client-decorations=mac] body.sable-remote-theme {
+    --titlebar-height: 0px;
+    --safe-top: var(--safe-area-inset-top, 0px);
+    /* Wide enough that the three traffic lights (about 7–68px from the
+       window edge) sit inside the rail with room to spare, clear of the
+       card's edge. Sable's default is 66px. */
+    --navigation-rail-width: 80px;
+  }
+  :root[data-client-decorations=mac] body.sable-remote-theme .titlebar { display: none; }
+  :root[data-client-decorations=mac] body.sable-remote-theme :where(.sidebar) .rail {
+    padding-top: var(--mac-band);
+    -webkit-app-region: drag;
+  }
+  :root[data-client-decorations=mac] body.sable-remote-theme :where(.sidebar) .rail :is(button, a, [role=button], [tabindex]) {
+    -webkit-app-region: no-drag;
+  }
+}
+/* The image viewer brings its own toolbar: let it have the whole window. */
+:root[data-client-decorations=mac] body.sable-remote-theme:has(> .viewer) .titlebar { background: transparent; }
+
+/* ---- Window surface: rail + room list --------------------------------------- */
+body.sable-remote-theme :is(:where(.sidebar) .rail, .room-nav, .desktop-tools) {
+  background: var(--mac-window-bg);
+  color: var(--mac-fg);
+  border-color: transparent;
+  --surface-container-hover: var(--mac-row-hover);
+  --surface-container-active: var(--mac-flat-active);
+  --surface-on-container: var(--mac-fg);
+  --ghost-hover: var(--mac-flat-hover);
+  --ghost-active: var(--mac-flat-active);
+}
+body.sable-remote-theme :where(.sidebar) .rail,
+body.sable-remote-theme .room-nav { border-inline-end: 0; }
+body.sable-remote-theme .desktop-tools { border-top: 0; border-inline-end: 0; }
+body.sable-remote-theme .rail-separator { background: var(--mac-line); width: 1.75rem; }
+
+/* Rail tiles: Slack's rounded-square workspace icons. The selected space gets
+   Slack's ring (a gap in the window colour, then a ring in the text colour)
+   instead of Sable's accent bar on the left. */
+body.sable-remote-theme .nav-tab,
+body.sable-remote-theme .nav-tab-outlined {
+  border-color: transparent;
+  border-radius: 9px;
+}
+body.sable-remote-theme .nav-tab .avatar-root { border-radius: 9px; }
+body.sable-remote-theme .nav-tab::before { display: none !important; }
+body.sable-remote-theme .nav-tab:hover { background: var(--mac-flat-hover); }
+body.sable-remote-theme .nav-tab-side:is([aria-current=page], [data-current=true]) {
+  background: transparent;
+  box-shadow: 0 0 0 2px var(--mac-window-bg), 0 0 0 3.5px var(--mac-dim-fg);
+}
+html body.sable-remote-theme .nav-tab:is(.nav-tab-side, .nav-tab-bottom):hover,
+html body.sable-remote-theme .nav-tab:is(.nav-tab-side, .nav-tab-bottom):hover > .nav-tab-hit-area {
+  transform: none;
+}
+
+/* Room list header: bold title, like Slack's workspace name. */
+body.sable-remote-theme .room-nav-header {
+  flex-basis: var(--header-height);
+  min-height: var(--header-height);
+  /* Title lines up with the section labels and room avatars (16px in). */
+  padding: 0 8px 0 16px;
+}
+body.sable-remote-theme .room-nav-header h2 {
+  font-size: 15px;
+  font-weight: 700;
+  /* Inherit: white over a space banner (Sable's .on-banner scrim). */
+  color: inherit;
+}
+body.sable-remote-theme .room-nav-menu {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  color: var(--mac-dim-fg);
+}
+body.sable-remote-theme .room-nav-menu:hover { background: var(--mac-flat-hover); color: var(--mac-fg); }
+body.sable-remote-theme .room-nav-menu svg { width: var(--mac-icon-size); height: var(--mac-icon-size); }
+
+/* Rows: Slack's sidebar rows, 28px, 6px corners, 8px in from the edges.
+   The open room is filled with the system accent, white text. */
+body.sable-remote-theme .room-nav-actions { padding: 0 8px 8px; gap: 1px; }
+body.sable-remote-theme .room-list { padding-inline: 8px; }
+body.sable-remote-theme .room-list .room-row-wrap { margin-bottom: 1px; border-radius: 6px; }
+body.sable-remote-theme :is(.nav-action, .room-nav-trigger, .room-row) {
+  min-height: 28px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 400;
+}
+body.sable-remote-theme :is(.nav-action, .room-row-wrap, .room-nav-trigger):hover {
+  background: var(--mac-row-hover);
+}
+body.sable-remote-theme .room-row-wrap:has(.room-row:is([aria-current=page], [data-current=true])),
+body.sable-remote-theme :is(.nav-action, .room-row, .room-nav-trigger):is([aria-current=page], [data-current=true]),
+body.sable-remote-theme :is(.nav-action, .room-row, .room-nav-trigger):is([aria-current=page], [data-current=true]):hover {
+  background: var(--mac-row-selected);
+  color: var(--mac-row-selected-fg);
+}
+body.sable-remote-theme :is(.nav-action, .room-row):is([aria-current=page], [data-current=true]) * {
+  color: inherit;
+}
+body.sable-remote-theme .nav-action .room-icon { opacity: 0.75; }
+body.sable-remote-theme .nav-action .room-icon svg { width: var(--mac-icon-size); height: var(--mac-icon-size); }
+
+/* Section headings: Slack's dim, medium-weight group labels. */
+body.sable-remote-theme .rooms-heading {
+  margin-inline: 8px;
+  width: calc(100% - 16px);
+  height: 28px;
+  border-radius: 6px;
+  opacity: 1;
+  color: var(--mac-dim-fg);
+}
+body.sable-remote-theme .rooms-heading:hover { background: var(--mac-row-hover); color: var(--mac-fg); }
+body.sable-remote-theme .rooms-heading-label { font-size: 13px; font-weight: 500; }
+
+/* Bottom tools: flat buttons on the window surface. */
+body.sable-remote-theme .quick-tool { border-radius: 6px; }
+body.sable-remote-theme .quick-tool:not(.priority-warning, .priority-critical) { border-color: transparent; }
+body.sable-remote-theme .quick-tool .tool-icon svg,
+body.sable-remote-theme .quick-tool > svg { width: var(--mac-icon-size); height: var(--mac-icon-size); }
+
+/* ---- The content card ------------------------------------------------------
+   Wide layout only (Sable's 48rem breakpoint): the conversation pane is
+   inset from the window's right and bottom edges with Slack's rounded
+   corners, a hairline edge and a soft shadow. The page behind it is the
+   window colour (Sable paints body in --bg-container). */
+@media (width >= 48rem) {
+  /* Sable sizes the panel with flex-basis/width/height 100% and pads its top
+     by --safe-top for the title band; swap that for margins so the card sits
+     below the band and inside the window edges. */
+  body.sable-remote-theme .drawer-viewport .content-panel {
+    flex: 1 1 auto;
+    width: auto;
+    height: auto;
+    min-width: 0;
+    margin: var(--mac-gap) var(--mac-gap) var(--mac-gap) 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-radius: 0 var(--mac-card-radius) var(--mac-card-radius) 0;
+    background: var(--mac-card-bg);
+    overflow: hidden;
+    /* Clip children (room header, composer) to the corners. */
+    isolation: isolate;
+  }
+  /* Slack's card holds the room list and the conversation together; only the
+     space rail stays on the window colour. Sable keeps the two in separate
+     containers (a fixed sidebar and the drawer viewport), so the card is drawn
+     once behind both, from the rail's edge to the window's, and the room list
+     is made transparent over it. Body's background paints the canvas, so a
+     z-index -1 layer sits above it and below everything else. */
+  body.sable-remote-theme::before {
+    content: "";
+    position: fixed;
+    inset: var(--mac-gap) var(--mac-gap) var(--mac-gap) calc(var(--navigation-rail-width) + var(--safe-left, 0px));
+    z-index: -1;
+    border-radius: var(--mac-card-radius);
+    /* The card itself carries the room list's tint; the conversation pane
+       paints white over its right part. */
+    background: var(--mac-list-bg);
+    box-shadow: var(--mac-card-edge);
+    pointer-events: none;
+  }
+  body.sable-remote-theme .room-nav { background: transparent; }
+  /* The rail lies over the card's left edge; with its own grey it hid the
+     card's shadow. The page behind it is the same grey, so drop it. */
+  body.sable-remote-theme :where(.sidebar) .rail { background: transparent; }
+  /* Slack's pane edge: a soft shadow (no hairline) the conversation pane
+     casts onto the room list. Sable clips the pane at its left edge, so the
+     shadow can't come from the pane itself; it is drawn at the sidebar's
+     right edge instead, which is exactly where the pane begins. */
+  body.sable-remote-theme .sidebar::after {
+    content: "";
+    position: absolute;
+    top: var(--mac-gap);
+    bottom: var(--mac-gap);
+    right: 0;
+    width: 10px;
+    background: linear-gradient(to left, var(--mac-pane-shade), transparent);
+    pointer-events: none;
+  }
+  /* The card starts --mac-gap below the window top, as does the room header
+     in the conversation; drop the list's top block (header, or a space's
+     banner with the header laid over it) by the same amount so both titles
+     share a baseline, and round the banner into the card's corner. */
+  body.sable-remote-theme .room-nav-top { margin-top: var(--mac-gap); }
+  body.sable-remote-theme .room-nav-top .room-banner,
+  body.sable-remote-theme .room-nav-header.on-banner {
+    border-top-left-radius: var(--mac-card-radius);
+    overflow: hidden;
+  }
+  /* The bottom tool bar runs under the rail and the room list. Transparent:
+     the page shows the window grey under the rail (and the card's shadow
+     on it), the card shows its tint under the list. */
+  body.sable-remote-theme .desktop-tools {
+    background: transparent;
+    margin-bottom: var(--mac-gap);
+    /* Centre the 42px account button in the (wider) rail column. */
+    padding-inline-start: calc((var(--navigation-rail-width) - 42px) / 2);
+  }
+}
+
+/* ---- Room header: Slack's channel header ------------------------------------ */
+body.sable-remote-theme .panel-header {
+  min-height: var(--header-height);
+  height: var(--header-height);
+  background: var(--mac-card-bg);
+  border-bottom: 1px solid var(--mac-line);
+  box-shadow: none;
+}
+body.sable-remote-theme .panel-header :is(h1, h2, .room-title, .title) {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 20px;
+}
+body.sable-remote-theme .panel-header :is(.room-topic, .subtitle) {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.35;
+  margin-top: 4px;
+  color: var(--mac-dim-fg);
+}
+body.sable-remote-theme .panel-header-button { --button-icon-size: var(--mac-icon-size); }
+/* Pinned-messages count: Sable lays it over the pin icon's top-left, where
+   it covers the glyph. Move it to the top-right corner as a small badge. */
+body.sable-remote-theme .panel-header-button { position: relative; }
+body.sable-remote-theme .panel-header-button .pin-badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  left: auto;
+  min-width: 15px;
+  padding: 1px 4px;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 12px;
+  border-radius: 9999px;
+  box-sizing: border-box;
+  text-align: center;
+  background: color-mix(in srgb, var(--mac-fg) 14%, var(--mac-card-bg));
+  color: var(--mac-fg);
+  /* Cut-out ring in the header colour, so it reads as sitting on the icon. */
+  box-shadow: 0 0 0 1.5px var(--mac-card-bg);
+}
+
+/* Side panels (members, threads, search, media, widgets): Slack's right-hand
+   panes inside the same card, set off by a hairline. */
+body.sable-remote-theme :is(.members-drawer, .side-panel, .widgets-panel) {
+  background: var(--mac-card-bg);
+  border-left: 1px solid var(--mac-line);
+  --surface-container-hover: var(--mac-row-hover);
+  --surface-container-active: var(--mac-flat-active);
+}
+body.sable-remote-theme :is(.members-drawer, .side-panel, .widgets-panel) :is(.panel-header, .controls) { background: transparent; }
+body.sable-remote-theme .side-panel .group-heading { background: var(--mac-card-bg); }
+
+/* Header bars move the window (macOS toolbars do); their controls don't.
+   Traffic lights are native, so nothing in the DOM needs cutting out. */
+:root[data-client-decorations=mac] body.sable-remote-theme :is(.panel-header, .room-nav-header, .settings-nav-header) {
+  -webkit-app-region: drag;
+}
+:root[data-client-decorations=mac] body.sable-remote-theme :is(.panel-header, .room-nav-header, .settings-nav-header) :is(button, a, input, [role=button], [tabindex], [contenteditable]) {
+  -webkit-app-region: no-drag;
+}
+/* A popover drawn over a header must stay clickable. */
+:root[data-client-decorations=mac] body.sable-remote-theme :is(.menu-surface, .dialog-content, .tooltip, .responsive-popover) {
+  -webkit-app-region: no-drag;
+}
+
+/* ---- Space lobby: room directory as a white grouped list -------------------
+   Sable paints it in the window colour, which reads as a grey slab inside
+   the white card. */
+body.sable-remote-theme .content-panel .category {
+  background: var(--mac-box-bg);
+  border-color: var(--mac-line);
+  border-radius: var(--radius-outer);
+  overflow: hidden;
+}
+
+/* ---- Timeline messages: Slack's full-width grey hover ----------------------- */
+@media (hover: hover) and (pointer: fine) {
+  body.sable-remote-theme .items .message:is(:hover, .menu-open) {
+    background-color: var(--surface-container-hover);
+  }
+}
+
+/* ---- Avatars: Slack's rounded squares ---------------------------------------- */
+body.sable-remote-theme .avatar-root:not(.nav-tab .avatar-root),
+body.sable-remote-theme .avatar-root:not(.nav-tab .avatar-root) :is(.avatar-image, .avatar-fallback) {
+  border-radius: 22%;
+}
+
+/* ---- Composer: Slack's bordered message box ---------------------------------- */
+body.sable-remote-theme .composer {
+  border: 1px solid var(--mac-strong-line);
+  border-radius: 8px;
+  background: var(--mac-card-bg);
+  box-shadow: none;
+}
+body.sable-remote-theme .composer:focus-within {
+  border-color: color-mix(in srgb, var(--mac-fg) 45%, transparent);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+body.sable-remote-theme :is(.composer-door, .composer-board-trigger) {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+}
+body.sable-remote-theme :is(.composer-door, .composer-board-trigger):hover { background: var(--mac-flat-hover); }
+body.sable-remote-theme :is(.composer-door, .composer-board-trigger) svg,
+body.sable-remote-theme .composer-after .icon-button svg { width: var(--mac-icon-size); height: var(--mac-icon-size); }
+body.sable-remote-theme .composer-separator { border-color: var(--mac-line); }
+body.sable-remote-theme .composer-send:not(:disabled, [aria-disabled=true]) { color: var(--mac-accent-text); }
+
+/* ---- Buttons: macOS push buttons --------------------------------------------- */
+body.sable-remote-theme .btn:not(.icon-button) {
+  border-radius: 6px;
+  font-weight: 500;
+}
+body.sable-remote-theme .btn-secondary {
+  --button-container: var(--mac-box-bg);
+  --button-container-hover: color-mix(in srgb, var(--mac-box-bg) 94%, var(--mac-fg));
+  --button-container-active: color-mix(in srgb, var(--mac-box-bg) 86%, var(--mac-fg));
+  --button-line: transparent;
+  box-shadow: var(--mac-button-shadow);
+}
+body.sable-remote-theme .btn-primary { box-shadow: 0 0.5px 1.5px rgba(0, 0, 0, 0.2); }
+body.sable-remote-theme .btn-ghost {
+  --button-container-hover: var(--mac-flat-hover);
+  --button-container-active: var(--mac-flat-active);
+}
+body.sable-remote-theme .icon-button {
+  border-radius: 6px;
+  --ghost-hover: var(--mac-flat-hover);
+  --ghost-active: var(--mac-flat-active);
+}
+body.sable-remote-theme .icon-button-small { --button-icon-size: var(--mac-icon-size); }
+
+/* ---- Menus and popovers: macOS menus (translucent, blurred, blue highlight) -- */
+body.sable-remote-theme .menu-surface {
+  background: var(--mac-menu-bg);
+  -webkit-backdrop-filter: blur(30px) saturate(1.8);
+  backdrop-filter: blur(30px) saturate(1.8);
+  border: 0;
+  border-radius: 10px;
+  box-shadow: var(--mac-menu-shadow);
+  --surface-container-hover: var(--mac-accent);
+  --surface-container-active: var(--mac-accent);
+}
+body.sable-remote-theme .menu-scroll-content { padding: 5px; }
+body.sable-remote-theme .menu-item {
+  min-height: 24px;
+  padding: 0 10px;
+  border-radius: 5px;
+  font-size: 13px;
+}
+body.sable-remote-theme .menu-item:is(:hover, :focus-visible, [data-highlighted]) {
+  background: var(--mac-accent);
+  color: #ffffff;
+}
+body.sable-remote-theme .menu-item:is(:hover, :focus-visible, [data-highlighted]) * { color: inherit; }
+body.sable-remote-theme .menu-item svg { width: 16px; height: 16px; }
+body.sable-remote-theme .menu-item-destructive { color: var(--crit-on-container); }
+body.sable-remote-theme .menu-item-destructive:is(:hover, :focus-visible, [data-highlighted]) { background: var(--crit-main); color: #ffffff; }
+body.sable-remote-theme .menu-separator { margin: 5px 10px; background: var(--mac-line); }
+body.sable-remote-theme .menu-surface:focus-visible { outline: none; }
+body.sable-remote-theme .mention-profile-popover,
+body.sable-remote-theme .mention-profile-popover > .profile-card { border-radius: 12px; }
+body.sable-remote-theme .mention-profile-popover > .profile-card { border: 0; }
+
+/* Tooltips: the macOS help tag, light with a hairline. */
+body.sable-remote-theme .tooltip {
+  background: var(--mac-tooltip-bg);
+  color: var(--mac-tooltip-fg);
+  border: 0;
+  border-radius: 6px;
+  padding: 4px 8px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.08);
+  font-size: 12px;
+}
+
+/* ---- Switches: macOS toggles -------------------------------------------------- */
+body.sable-remote-theme .switch-root {
+  box-shadow: inset 0 0 0 0.5px var(--mac-line);
+  background: var(--mac-switch-off);
+  opacity: 1;
+}
+body.sable-remote-theme .switch-root[data-state=checked] { background: var(--mac-accent); box-shadow: none; }
+body.sable-remote-theme .switch-thumb {
+  background: #ffffff;
+  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+/* ---- Text fields: macOS fields with the blue focus ring ---------------------- */
+body.sable-remote-theme .form-control {
+  border-color: transparent;
+  --form-control-container: var(--mac-box-bg);
+  --form-control-container-line: var(--mac-strong-line);
+  border-radius: 6px;
+  /* Sable draws the edge as an inset shadow; macOS fields have a hairline. */
+  box-shadow: inset 0 0 0 1px var(--mac-strong-line);
+}
+body.sable-remote-theme .form-control:is(:focus, :focus-visible, :focus-within) {
+  box-shadow: inset 0 0 0 1px var(--mac-accent), 0 0 0 3px var(--focus-ring);
+}
+body.sable-remote-theme .form-control:is([aria-invalid=true], .form-control-error) {
+  box-shadow: inset 0 0 0 1px var(--crit-main), 0 0 0 3px color-mix(in srgb, var(--crit-main) 40%, transparent);
+}
+
+/* ---- Dialogs: macOS sheets ----------------------------------------------------- */
+body.sable-remote-theme .dialog-content:not(.dialog-content-drawer) { border-radius: 12px; }
+
+/* ---- Settings: System Settings ------------------------------------------------ */
+body.sable-remote-theme .dialog-content-settings {
+  border: 0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+body.sable-remote-theme .settings-nav {
+  background: var(--mac-window-bg);
+  border-right: 1px solid var(--mac-line);
+  --surface-container-hover: var(--mac-row-hover);
+  --surface-container-active: var(--mac-flat-active);
+}
+body.sable-remote-theme .settings-content,
+body.sable-remote-theme .section-bar {
+  background: var(--mac-group-bg);
+  --surface-container: var(--mac-group-bg);
+}
+body.sable-remote-theme .settings-nav-header .settings-heading { font-size: 13px; font-weight: 700; }
+body.sable-remote-theme .settings-nav-list { padding: 8px; gap: 1px; }
+body.sable-remote-theme .settings-nav-item {
+  min-height: 28px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 400;
+}
+body.sable-remote-theme .settings-nav-item:hover { background: var(--mac-row-hover); }
+body.sable-remote-theme .settings-nav-item:is([aria-current=page], [data-current=true]) {
+  background: var(--mac-row-selected);
+  color: var(--mac-row-selected-fg);
+}
+body.sable-remote-theme .settings-nav-group-label { color: var(--mac-dim-fg); font-size: 11px; font-weight: 600; }
+body.sable-remote-theme .settings-section-title h2,
+body.sable-remote-theme .settings-section-heading h2 {
+  color: var(--mac-fg);
+  font-size: 13px;
+  font-weight: 700;
+}
+body.sable-remote-theme .settings-form h3 { color: var(--mac-fg); font-size: 13px; font-weight: 700; }
+body.sable-remote-theme :is(.settings-description, .settings-note, .themes-hint, .settings-form .hint) {
+  color: var(--mac-dim-fg);
+}
+/* Setting rows: System Settings' grouped boxes with inset separators. */
+body.sable-remote-theme .settings-section-content > .settings-rows,
+body.sable-remote-theme .settings-form > .settings-rows {
+  margin-inline: 16px;
+  background: var(--mac-box-bg);
+  border-radius: 10px;
+  box-shadow: 0 0 0 0.5px var(--mac-line);
+}
+body.sable-remote-theme .settings-rows > .setting-row {
+  min-height: 40px;
+  box-sizing: border-box;
+  padding: 6px 12px;
+  box-shadow: none;
+}
+body.sable-remote-theme .settings-rows > .setting-row + .setting-row { border-top: 1px solid var(--mac-line); }
+body.sable-remote-theme .settings-rows + .settings-rows { margin-top: 16px; }
+body.sable-remote-theme .settings-rows + .settings-rows .setting-row:first-child { box-shadow: none; }
+body.sable-remote-theme .settings-item-list > li {
+  background: var(--mac-box-bg);
+  border-radius: 10px;
+  box-shadow: 0 0 0 0.5px var(--mac-line);
+}
+
+/* Segmented controls: macOS segmented picker. */
+body.sable-remote-theme .switcher {
+  --switcher-pad: 2px;
+  background: var(--mac-switch-off);
+  border-radius: 7px;
+}
+body.sable-remote-theme .switcher-thumb {
+  background: var(--mac-box-bg);
+  border-radius: 5px;
+  box-shadow: var(--mac-button-shadow);
+}
+body.sable-remote-theme .switcher-option {
+  border-radius: 5px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--mac-fg);
+  opacity: 1;
+}
+
+/* Cards. */
+body.sable-remote-theme :is(.settings-changes, .action-card, .profile-card-panel.framed) {
+  background: var(--mac-box-bg);
+  border: 0;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+body.sable-remote-theme .status-badge { border: 0; border-radius: 9999px; font-weight: 600; }
+
+/* ---- Accent as text ------------------------------------------------------------ */
+body.sable-remote-theme :is(
+  .account-switch-button, .action-card-arrow, .action-card-icon, .app-page-eyebrow,
+  .bot-command-name, .context-kind, .drop-card, .empty-state-eyebrow, .error-code,
+  .formatted-body .code-action, .jump-item svg, .link-host, .privacy-content a,
+  .pusher-gateway-link, .reply-preview .reply-icon, .target-preview .target-icon,
+  .thread-summary, .inbox-tab[data-state=active], .summary .pin
+) {
+  color: var(--mac-accent-text);
+}
+body.sable-remote-theme :is(a:not([class]), a[class^="svelte-"]:not([class*=" "])) {
+  color: var(--mac-accent-text);
+}
+body.sable-remote-theme .settings-outline :is(a:not([class]), a[class^="svelte-"]:not([class*=" "])) {
+  color: var(--mac-dim-fg);
+}
+body.sable-remote-theme .settings-outline :is(a:not([class]), a[class^="svelte-"]:not([class*=" "])):is([aria-current=location], :hover) {
+  color: var(--mac-fg);
+}
+
+/* ---- Scrollbars: macOS overlay scrollers ---------------------------------------
+   Sable styles ::-webkit-scrollbar; the standard scrollbar-width/-color would
+   switch Chromium to classic bars, so this stays on the webkit pseudo-elements.
+   Thin rounded thumb, no track, shown while the pointer is over the scroller. */
+body.sable-remote-theme { --timeline-scrollbar-size: 12px; }
+body.sable-remote-theme :is(*, .viewport)::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+  background: transparent;
+}
+body.sable-remote-theme :is(*, .viewport)::-webkit-scrollbar-track,
+body.sable-remote-theme :is(*, .viewport)::-webkit-scrollbar-corner { background: transparent; }
+body.sable-remote-theme :is(*, .viewport)::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+@property --mac-sb {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+:where(body.sable-remote-theme *) { transition: --mac-sb 0.3s ease 0.8s; }
+:where(body.sable-remote-theme *:hover) {
+  --mac-sb: var(--mac-scroll);
+  transition-delay: 0s;
+}
+body.sable-remote-theme :is(*, .viewport)::-webkit-scrollbar-thumb {
+  --mac-sb: inherit;
+  background: var(--mac-sb);
+  background-clip: padding-box;
+  border: 3px solid transparent;
+  border-radius: 99px;
+  min-height: 36px;
+}
+body.sable-remote-theme :is(*, .viewport)::-webkit-scrollbar-thumb:hover {
+  border-width: 2px;
+  background-color: var(--mac-scroll-hover);
+}

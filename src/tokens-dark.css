@@ -1,0 +1,111 @@
+/*
+@sable-theme
+id: macos-dark
+name: macOS Dark
+author: CR0CKER
+description: Native-feeling macOS theme laid out like Slack for Mac: integrated title bar, grey window, inset content card, system blue. v1.0.0
+kind: dark
+contrast: low
+tags: dark, macos, slack
+*/
+
+body.sable-remote-theme {
+  /* Sable colour tokens (Apple system colours, dark appearance) */
+  --sable-bg-container: #29292b;
+  --sable-bg-container-hover: rgba(255, 255, 255, 0.06);
+  --sable-bg-container-active: rgba(255, 255, 255, 0.1);
+  --sable-bg-container-line: rgba(255, 255, 255, 0.1);
+  --sable-bg-on-container: rgba(255, 255, 255, 0.86);
+  --sable-surface-container: #1e1e1f;
+  --sable-surface-container-hover: rgba(255, 255, 255, 0.04);
+  --sable-surface-container-active: rgba(255, 255, 255, 0.08);
+  --sable-surface-container-line: rgba(255, 255, 255, 0.1);
+  --sable-surface-on-container: rgba(255, 255, 255, 0.86);
+  --sable-surface-var-container: #2c2c2e;
+  --sable-surface-var-container-hover: #343436;
+  --sable-surface-var-container-active: #3a3a3c;
+  --sable-surface-var-container-line: rgba(255, 255, 255, 0.12);
+  --sable-surface-var-on-container: rgba(255, 255, 255, 0.86);
+  --sable-sec-main: rgba(255, 255, 255, 0.8);
+  --sable-sec-main-hover: rgba(255, 255, 255, 0.88);
+  --sable-sec-main-active: rgba(255, 255, 255, 0.95);
+  --sable-sec-main-line: rgba(255, 255, 255, 0.12);
+  --sable-sec-on-main: #1e1e1f;
+  --sable-sec-container: rgba(255, 255, 255, 0.07);
+  --sable-sec-container-hover: rgba(255, 255, 255, 0.1);
+  --sable-sec-container-active: rgba(255, 255, 255, 0.14);
+  --sable-sec-container-line: rgba(255, 255, 255, 0.12);
+  --sable-sec-on-container: rgba(255, 255, 255, 0.86);
+  --sable-primary-main: #0a84ff;
+  --sable-primary-main-hover: color-mix(in srgb, #0a84ff 88%, #ffffff);
+  --sable-primary-main-active: color-mix(in srgb, #0a84ff 80%, #ffffff);
+  --sable-primary-main-line: #0a84ff;
+  --sable-primary-on-main: #ffffff;
+  --sable-primary-container: #10304f;
+  --sable-primary-container-hover: #143a60;
+  --sable-primary-container-active: #184471;
+  --sable-primary-container-line: #1f5590;
+  --sable-primary-on-container: #6cb4ff;
+  --sable-success-main: #30d158;
+  --sable-success-main-hover: color-mix(in srgb, #30d158 88%, #ffffff);
+  --sable-success-main-active: color-mix(in srgb, #30d158 80%, #ffffff);
+  --sable-success-main-line: #30d158;
+  --sable-success-on-main: rgba(0, 0, 0, 0.85);
+  --sable-success-container: #133b20;
+  --sable-success-container-hover: #174627;
+  --sable-success-container-active: #1b512d;
+  --sable-success-container-line: #22673a;
+  --sable-success-on-container: #6fe08b;
+  --sable-warn-main: #ff9f0a;
+  --sable-warn-main-hover: color-mix(in srgb, #ff9f0a 88%, #ffffff);
+  --sable-warn-main-active: color-mix(in srgb, #ff9f0a 80%, #ffffff);
+  --sable-warn-main-line: #ff9f0a;
+  --sable-warn-on-main: rgba(0, 0, 0, 0.85);
+  --sable-warn-container: #45300c;
+  --sable-warn-container-hover: #50380e;
+  --sable-warn-container-active: #5b4010;
+  --sable-warn-container-line: #7a5615;
+  --sable-warn-on-container: #ffc366;
+  --sable-crit-main: #ff453a;
+  --sable-crit-main-hover: color-mix(in srgb, #ff453a 88%, #ffffff);
+  --sable-crit-main-active: color-mix(in srgb, #ff453a 80%, #ffffff);
+  --sable-crit-main-line: #ff453a;
+  --sable-crit-on-main: #ffffff;
+  --sable-crit-container: #4a1916;
+  --sable-crit-container-hover: #561c19;
+  --sable-crit-container-active: #63201c;
+  --sable-crit-container-line: #842a24;
+  --sable-crit-on-container: #ff8a82;
+  --sable-focus-ring: rgba(10, 132, 255, 0.55);
+  --sable-shadow: rgba(0, 0, 0, 0.35);
+  --sable-overlay: rgba(0, 0, 0, 0.5);
+
+  /* macOS values used by the structure rules below */
+  --mac-window-bg: #29292b;
+  --mac-card-bg: #1e1e1f;
+  --mac-group-bg: #1e1e1f;
+  --mac-box-bg: #2a2a2c;
+  --mac-fg: rgba(255, 255, 255, 0.86);
+  --mac-dim-fg: rgba(255, 255, 255, 0.55);
+  --mac-line: rgba(255, 255, 255, 0.1);
+  --mac-strong-line: rgba(255, 255, 255, 0.22);
+  --mac-row-hover: rgba(255, 255, 255, 0.06);
+  --mac-row-selected: #0a84ff;
+  --mac-row-selected-fg: #ffffff;
+  --mac-flat-hover: rgba(255, 255, 255, 0.08);
+  --mac-flat-active: rgba(255, 255, 255, 0.14);
+  --mac-accent: #0a84ff;
+  --mac-accent-text: #4aa3ff;
+  --mac-selection: rgba(10, 132, 255, 0.35);
+  --mac-card-edge: 0 1px 3px rgba(0, 0, 0, 0.4), 0 2px 10px rgba(0, 0, 0, 0.3);
+  --mac-pane-shade: rgba(0, 0, 0, 0.35);   /* soft shadow the conversation pane casts on the room list */
+  --mac-list-bg: #242426;          /* room list half of the card */
+  --mac-button-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.12), 0 0.5px 1.5px rgba(0, 0, 0, 0.4);
+  --mac-menu-bg: rgba(40, 40, 42, 0.86);
+  --mac-menu-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), 0 1px 4px rgba(0, 0, 0, 0.3);
+  --mac-tooltip-bg: #343436;
+  --mac-tooltip-fg: rgba(255, 255, 255, 0.86);
+  --mac-switch-off: rgba(255, 255, 255, 0.14);
+  --mac-scroll: rgba(255, 255, 255, 0.35);
+  --mac-scroll-hover: rgba(255, 255, 255, 0.5);
+}

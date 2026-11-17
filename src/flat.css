@@ -1,0 +1,27 @@
+
+/* ==========================================================================
+   Flat variant: overrides appended after structure.css.
+   Same layout, but edges are drawn with hairlines instead of drop shadows
+   (the content card, the conversation pane's edge, cards). Menus, tooltips
+   and dialogs get their hairline back and keep a shadow, since popovers
+   need one to read as floating.
+   ========================================================================== */
+body.sable-remote-theme {
+  --mac-card-edge: 0 0 0 1px var(--mac-line);
+  --mac-pane-shade: transparent;
+  --shadow-e400: 0 0 0 0.5px var(--mac-strong-line), 0 20px 50px rgba(0, 0, 0, 0.3);
+}
+/* Conversation pane edge: a hairline, no shade. */
+body.sable-remote-theme .sidebar::after {
+  width: 1px;
+  background: var(--mac-line);
+}
+body.sable-remote-theme .menu-surface {
+  box-shadow: 0 0 0 0.5px var(--mac-strong-line), var(--mac-menu-shadow);
+}
+body.sable-remote-theme .tooltip {
+  box-shadow: 0 0 0 0.5px var(--mac-strong-line), 0 3px 10px rgba(0, 0, 0, 0.15);
+}
+body.sable-remote-theme :is(.settings-changes, .action-card, .profile-card-panel.framed) {
+  box-shadow: 0 0 0 1px var(--mac-line);
+}

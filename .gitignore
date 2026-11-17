@@ -1,0 +1,5 @@
+.DS_Store
+._*
+__MACOSX/
+# Debug screenshots from tools/cdp.mjs and tools/live.sh
+*.png
