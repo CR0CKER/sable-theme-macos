@@ -564,8 +564,16 @@ body.sable-remote-theme .menu-item:is(:hover, :focus-visible, [data-highlighted]
   background: var(--mac-accent);
   color: #ffffff;
 }
-body.sable-remote-theme .menu-item:is(:hover, :focus-visible, [data-highlighted]) * { color: inherit; }
-body.sable-remote-theme .menu-item svg { width: 16px; height: 16px; }
+/* White text and icons on the accent, but a presence dot keeps its status colour. */
+body.sable-remote-theme .menu-item:is(:hover, :focus-visible, [data-highlighted]) :not(.presence-dot) { color: inherit; }
+/* Direct icons only, as Sable sizes them: a descendant selector also blew up
+   the presence dot's inner <svg> past its ring (adwaita-for-sable#4). */
+body.sable-remote-theme .menu-item > svg { width: 16px; height: 16px; }
+/* Sable centres the account menu's presence dot in its 20px icon column;
+   centre it in the theme's 16px one. */
+body.sable-remote-theme .sidebar-popover .menu-item .presence-dot {
+  margin: 0 calc((16px - var(--space-250)) / 2);
+}
 body.sable-remote-theme .menu-item-destructive { color: var(--crit-on-container); }
 body.sable-remote-theme .menu-item-destructive:is(:hover, :focus-visible, [data-highlighted]) { background: var(--crit-main); color: #ffffff; }
 body.sable-remote-theme .menu-separator { margin: 5px 10px; background: var(--mac-line); }
