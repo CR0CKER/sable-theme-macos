@@ -3,7 +3,7 @@
 id: macos-light
 name: macOS Light
 author: CR0CKER
-description: Native-feeling macOS theme laid out like Slack for Mac: integrated title bar, grey window, inset content card, system blue. v1.0.0
+description: Native-feeling macOS theme laid out like Slack for Mac: integrated title bar, grey window, inset content card, system blue. v1.0.1
 kind: light
 contrast: low
 tags: light, macos, slack
@@ -427,6 +427,8 @@ body.sable-remote-theme .panel-header :is(.room-topic, .subtitle) {
   color: var(--mac-dim-fg);
 }
 body.sable-remote-theme .panel-header-button { --button-icon-size: var(--mac-icon-size); }
+/* Sable draws Members, More options and Back at 24px beside their neighbours. */
+body.sable-remote-theme .panel-header-button svg { width: var(--mac-icon-size); height: var(--mac-icon-size); }
 /* Pinned-messages count: Sable lays it over the pin icon's top-left, where
    it covers the glyph. Move it to the top-right corner as a small badge. */
 body.sable-remote-theme .panel-header-button { position: relative; }

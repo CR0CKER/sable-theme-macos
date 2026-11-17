@@ -4,7 +4,7 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [1.0.1] - 2026-11-17
 
 ### Fixed
 
@@ -13,6 +13,11 @@ All notable changes to this project are documented here. The format follows
   own drawing, which spilled out of its ring, down and to the right (as in
   [adwaita-for-sable#4](https://github.com/CR0CKER/adwaita-for-sable/issues/4)).
 - A highlighted menu row keeps its presence dot's colour instead of turning it white.
+
+### Changed
+
+- Header bar icons are one size: Sable draws Members, More options and the narrow layout's Back
+  arrow at 24px, beside 18px neighbours; all are 18px now.
 
 ## [1.0.0] - 2026-11-17
 
@@ -25,5 +30,5 @@ All notable changes to this project are documented here. The format follows
 - `build.sh`, which builds all four themes from `src/`, and `tools/check.sh`, the CI gate.
 - Helpers in `tools/` for inspecting a running Sable over Chrome DevTools Protocol.
 
-[Unreleased]: https://github.com/CR0CKER/sable-theme-macos/compare/v1.0.0...HEAD
+[1.0.1]: https://github.com/CR0CKER/sable-theme-macos/releases/tag/v1.0.1
 [1.0.0]: https://github.com/CR0CKER/sable-theme-macos/releases/tag/v1.0.0
