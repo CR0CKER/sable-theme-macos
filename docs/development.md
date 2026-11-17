@@ -111,6 +111,18 @@ Learned by reading the app (Sable v26.11.1 for macOS).
   from the left, centred in the top 28px) and **can't be moved from CSS**. The renderer sets
   `<html data-client-decorations="mac">` and draws `.titlebar.titlebar-mac > .drag > .title`
   (default height `--titlebar-height: 2rem`, included in `--safe-top`).
+- **Title bar elsewhere** (Linux, Windows): with Sable's own title bar the renderer sets
+  `data-client-decorations="desktop"` and draws a 32px `.titlebar` with minimise, maximise and
+  close. The theme's title-band rules are `mac`-only, so that strip stays, and everything that
+  reaches the window's top must clear it: the card's top offset is `--safe-top` plus `--mac-gap`
+  (`--safe-top` is 0 in the Mac's wide layout, so the Mac is unchanged), and the header bar adds
+  Sable's `--edge-inset-top` to its height, as Sable's own rule does (in the narrow layout the
+  header reaches under the band and pads itself down). To check, set
+  `document.documentElement.dataset.clientDecorations` to `mac` or `desktop` on any machine and
+  measure: the Mac's layout follows (the native traffic lights don't).
+- **Fonts elsewhere:** none of the Mac fonts exist on Linux or Windows, so `system-ui` follows them
+  in `--font-family-base`, ahead of the emoji font. Without it the emoji font came first; its "0"
+  is 0px wide, so every `ch` width collapsed (Sable caps sender names at `24ch`: names vanished).
 - **Wide layout** (Sable's breakpoint, `width >= 48rem`): `.sidebar` is `position: fixed`
   (z-index 2) and holds `.desktop-navigation` → `.desktop-navigation-main` (`.rail` +
   `.room-nav`) and `.desktop-tools` (the bottom bar: account button and quick tools). The
@@ -143,7 +155,7 @@ These are settled. Change them on purpose, not by accident.
    the card's edge. The rail top and header bars are `-webkit-app-region: drag`; their controls are
    `no-drag`. The narrow layout keeps a 28px band.
 3. **One card** (room list plus conversation, as in Slack), inset 4px (`--mac-gap`) from the
-   window's top, right and bottom; only the rail stays on the window grey. `body::before` draws the
+   window's top (below Sable's title bar where it draws one), right and bottom; only the rail stays on the window grey. `body::before` draws the
    card; `.room-nav`, `.rail` and `.desktop-tools` are transparent over it, and `.content-panel`
    paints the conversation over the card's light tint (`--mac-list-bg`, Slack's slightly grey
    channel list).

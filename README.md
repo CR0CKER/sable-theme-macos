@@ -14,7 +14,8 @@ There are two versions with the same layout:
 - **macOS Flat**: hairlines at those edges instead of shadows.
 
 Built for **Sable v26.11.1 for macOS**. The layout rules target Sable's class names, which can
-change between releases.
+change between releases. It also works in Sable for Linux and Windows: there Sable's own title
+bar (minimise, maximise, close) stays above the card, and the text uses the system's UI font.
 
 ## Install
 

@@ -4,6 +4,18 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- On Linux and Windows, with Sable's own title bar, the room header and the content card start
+  below that bar instead of under it (it covered the top of the header's buttons), and in the
+  narrow layout the header is tall enough for its buttons. On the Mac, the narrow layout's header
+  grows by the title band's height for the same reason; the wide layout is unchanged.
+- On systems without the Mac fonts (Linux, Windows), sender names in the timeline show again, and
+  text uses the system's UI font: the emoji font came first, and Sable's name width (`24ch`)
+  collapsed to nothing.
+
 ## [1.0.1] - 2026-11-17
 
 ### Fixed
@@ -30,5 +42,6 @@ All notable changes to this project are documented here. The format follows
 - `build.sh`, which builds all four themes from `src/`, and `tools/check.sh`, the CI gate.
 - Helpers in `tools/` for inspecting a running Sable over Chrome DevTools Protocol.
 
+[Unreleased]: https://github.com/CR0CKER/sable-theme-macos/compare/v1.0.1...HEAD
 [1.0.1]: https://github.com/CR0CKER/sable-theme-macos/releases/tag/v1.0.1
 [1.0.0]: https://github.com/CR0CKER/sable-theme-macos/releases/tag/v1.0.0

@@ -131,8 +131,11 @@ body.sable-remote-theme .text-scale-scope {
 }
 body.sable-remote-theme {
   /* San Francisco. --font-family resolves on <html>, so set both it and its
-     base here (a font chosen in Settings still wins: it is an inline style). */
-  --font-family-base: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", var(--font-family-emoji), sans-serif;
+     base here (a font chosen in Settings still wins: it is an inline style).
+     system-ui is for other systems, which have none of the Mac fonts: without
+     it the emoji font came first, its "0" is 0px wide, and every `ch` width
+     (Sable caps sender names at 24ch) collapsed to nothing. */
+  --font-family-base: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", system-ui, var(--font-family-emoji), sans-serif;
   --font-family: var(--font-family-base);
   --font-family-mono-base: ui-monospace, "SF Mono", Menlo, monospace;
   --font-family-mono: var(--font-family-mono-base);
@@ -334,13 +337,15 @@ body.sable-remote-theme .quick-tool > svg { width: var(--mac-icon-size); height:
 @media (width >= 48rem) {
   /* Sable sizes the panel with flex-basis/width/height 100% and pads its top
      by --safe-top for the title band; swap that for margins so the card sits
-     below the band and inside the window edges. */
+     below the band and inside the window edges. --safe-top is 0 on the Mac
+     here (no band in the wide layout), and Sable's 32px title bar strip
+     elsewhere (Linux, Windows), so the card starts below that strip. */
   body.sable-remote-theme .drawer-viewport .content-panel {
     flex: 1 1 auto;
     width: auto;
     height: auto;
     min-width: 0;
-    margin: var(--mac-gap) var(--mac-gap) var(--mac-gap) 0;
+    margin: calc(var(--safe-top, 0px) + var(--mac-gap)) var(--mac-gap) var(--mac-gap) 0;
     padding-top: 0;
     padding-bottom: 0;
     border-radius: 0 var(--mac-card-radius) var(--mac-card-radius) 0;
@@ -358,7 +363,7 @@ body.sable-remote-theme .quick-tool > svg { width: var(--mac-icon-size); height:
   body.sable-remote-theme::before {
     content: "";
     position: fixed;
-    inset: var(--mac-gap) var(--mac-gap) var(--mac-gap) calc(var(--navigation-rail-width) + var(--safe-left, 0px));
+    inset: calc(var(--safe-top, 0px) + var(--mac-gap)) var(--mac-gap) var(--mac-gap) calc(var(--navigation-rail-width) + var(--safe-left, 0px));
     z-index: -1;
     border-radius: var(--mac-card-radius);
     /* The card itself carries the room list's tint; the conversation pane
@@ -408,8 +413,10 @@ body.sable-remote-theme .quick-tool > svg { width: var(--mac-icon-size); height:
 
 /* ---- Room header: Slack's channel header ------------------------------------ */
 body.sable-remote-theme .panel-header {
-  min-height: var(--header-height);
-  height: var(--header-height);
+  /* Plus Sable's top inset, as in its own rule: in the narrow layout the
+     header reaches under the title band and pads itself down by its height. */
+  min-height: calc(var(--header-height) + var(--edge-inset-top, 0px));
+  height: calc(var(--header-height) + var(--edge-inset-top, 0px));
   background: var(--mac-card-bg);
   border-bottom: 1px solid var(--mac-line);
   box-shadow: none;
