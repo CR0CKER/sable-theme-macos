@@ -298,6 +298,16 @@ body.sable-remote-theme .quick-tool > svg { width: var(--mac-icon-size); height:
     /* Centre the 42px account button in the (wider) rail column. */
     padding-inline-start: calc((var(--navigation-rail-width) - 42px) / 2);
   }
+  /* Sable's room-list resize handle fills .desktop-navigation-main, which
+     ends above the tool bar. Stock Sable rules that bar off, so the handle
+     stopping there reads as intended; here the bar is part of the card, and
+     the handle looked cut short with its bottom part undraggable. Run it
+     through the bar to the card's bottom edge. */
+  body.sable-remote-theme .desktop-navigation-main .resize-handle {
+    height: auto;
+    bottom: calc(-1 * var(--sidebar-footer-height));
+    z-index: 1;
+  }
 }
 
 /* ---- Room header: Slack's channel header ------------------------------------ */

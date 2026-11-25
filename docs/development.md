@@ -130,6 +130,10 @@ Learned by reading the app (Sable v26.11.1 for macOS).
   `flex-basis`, `width` and `height` at 100% and top padding `--safe-top`), which holds `.room-view`
   with `.panel-header`. `.drawer-viewport` **clips** its overflow, so nothing drawn left of
   `.content-panel` shows.
+- **Room-list resize handle:** `.desktop-navigation-main > .resize-handle`, `height: 100%` of
+  its parent, so in stock Sable it stops at the top of `.desktop-tools` (`--sidebar-footer-height`,
+  4.625rem). The theme runs it down through that bar to the card's bottom, since the bar is part of
+  the card here.
 - **Variables:** `--navigation-rail-width` is set on `:root` (4.125rem by default) and can be
   overridden on `body`. `--room-nav-width` is set inline on `.app-shell` and `.room-nav`
   (user-resizable, stored as `sable-room-navigation-width`), so it is **not** available on `body`

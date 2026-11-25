@@ -4,6 +4,14 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- The room list's resize handle runs down to the bottom of the card. It stopped above the bottom
+  tool bar (account, search, notifications, settings), so its blue line looked cut short and the
+  bottom part of the list's edge couldn't be dragged.
+
 ## [1.0.2] - 2026-11-17
 
 ### Fixed
